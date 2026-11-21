@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACCORA Marketplace</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0b1020;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  background: #111a2e;
+  border-bottom: 1px solid #26334a;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+button {
+  background: #4ade80;
+  color: #07120b;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hero {
+  text-align: center;
+  padding: 55px 20px 35px;
+}
+
+.hero h1 {
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  color: #a5b4cc;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.search {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  background: #162238;
+  color: white;
+  border: 1px solid #334155;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.categories {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 22px;
+}
+
+.categories button {
+  white-space: nowrap;
+  background: #1c2940;
+  color: white;
+}
+
+.categories button.active {
+  background: #4ade80;
+  color: #07120b;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #162238;
+  border: 1px solid #263750;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.card .icon {
+  height: 110px;
+  background: #202e46;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  margin-bottom: 15px;
+}
+
+.card .tag {
+  color: #4ade80;
+  font-size: 12px;
+}
+
+.card h3 {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.card p {
+  color: #a5b4cc;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 40px;
+}
+
+.price {
+  color: #4ade80;
+  font-size: 23px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.card button {
+  width: 100%;
+}
+
+footer {
+  text-align: center;
+  padding: 35px 15px;
+  color: #94a3b8;
+  margin-top: 30px;
+  border-top: 1px solid #26334a;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">ACCORA</div>
+  <button onclick="buyerLogin()">Login</button>
+</header>
+
+<section class="hero">
+  <h1>Digital Marketplace</h1>
+  <p>Discover websites, digital assets and online businesses.</p>
+</section>
+
+<div class="container">
+
+  <input
+    class="search"
+    id="search"
+    placeholder="Search marketplace..."
+    oninput="render()"
+  >
+
+  <div class="categories">
+    <button class="active" onclick="setCategory('All',this)">All</button>
+    <button onclick="setCategory('Websites',this)">Websites</button>
+    <button onclick="setCategory('Domains',this)">Domains</button>
+    <button onclick="setCategory('Gaming',this)">Gaming</button>
+    <button onclick="setCategory('Businesses',this)">Businesses</button>
+  </div>
+
+  <div class="grid" id="listings"></div>
+
+</div>
+
+<footer>
+  ACCORA Marketplace<br><br>
+  Digital Asset Marketplace Demo
+</footer>
+
+<script>
+
+const products = [
+  {
+    name: "E-commerce Website",
+    category: "Websites",
+    description: "Ready-made online shopping website",
+    price: "$120",
+    icon: "🛒"
+  },
+  {
+    name: "Premium Domain",
+    category: "Domains",
+    description: "Premium brandable domain name",
+    price: "$80",
+    icon: "🌐"
+  },
+  {
+    name: "Gaming Asset",
+    category: "Gaming",
+    description: "Transferable gaming digital asset",
+    price: "$45",
+    icon: "🎮"
+  },
+  {
+    name: "Content Website",
+    category: "Websites",
+    description: "Content publishing website",
+    price: "$250",
+    icon: "📰"
+  },
+  {
+    name: "Online Business",
+    category: "Businesses",
+    description: "Digital business with brand assets",
+    price: "$300",
+    icon: "💼"
+  },
+  {
+    name: "Starter Website",
+    category: "Websites",
+    description: "Small business website template",
+    price: "$65",
+    icon: "🚀"
+  }
+];
+
+let selectedCategory = "All";
+
+function setCategory(category, button) {
+  selectedCategory = category;
+
+  document.querySelectorAll(".categories button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+  render();
+}
+
+function render() {
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = products.filter(product => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search);
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const listings = document.getElementById("listings");
+
+  if (filtered.length === 0) {
+    listings.innerHTML = "<p>No listings found.</p>";
+    return;
+  }
+
+  listings.innerHTML = filtered.map(product => `
+    <div class="card">
+      <div class="icon">${product.icon}</div>
+      <div class="tag">${product.category}</div>
+      <h3>${product.name}</h3>
+      <p>${product.description}</p>
+      <div class="price">${product.price}</div>
+      <button onclick="details('${product.name}')">
+        View Details
+      </button>
+    </div>
+  `).join("");
+}
+
+function details(name) {
+  alert("Listing: " + name + "\\n\\nDemo version. Marketplace features coming soon.");
+}
+
+function buyerLogin() {
+  alert("Buyer registration will be available soon.");
+}
+
+render();
+
+</script>
+
+</body>
+</html>
